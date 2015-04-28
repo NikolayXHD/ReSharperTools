@@ -4,16 +4,16 @@ using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace AttributeRulesPlugin
+namespace AbbyyLS.ReSharper
 {
 	[ElementProblemAnalyzer(new[] { typeof(IClassDeclaration) }, HighlightingTypes = new[] { typeof(MissingAttributeHighlighting) })]
 	public class AttributeUsageAnalyzer : IElementProblemAnalyzer
 	{
 		private static readonly IAttributeUsagePattern[] Patterns =
 		{
-			new BlToolkitAttributePattern(),
-			new MongoAttributePattern(),
-			new DataContractAttributePattern()
+			new BlToolkitPattern(),
+			new MongoPattern(),
+			new DataContractPattern()
 		};
 
 		public void Run(ITreeNode element, ElementProblemAnalyzerData analyzerData, IHighlightingConsumer consumer)
@@ -34,7 +34,7 @@ namespace AttributeRulesPlugin
 						classMarked[i] = true;
 						if (errorMessage != null)
 							consumer.AddHighlighting(
-								new MissingAttributeHighlighting(attribute, errorMessage),
+								new MissingAttributeHighlighting(attribute, errorMessage, Patterns[i].GetClassFixes(classDeclaration)),
 								attribute.GetDocumentRange(),
 								attribute.GetContainingFile());
 					}
@@ -56,6 +56,8 @@ namespace AttributeRulesPlugin
 				if (!(member is IPropertyDeclaration))
 					continue;
 
+				var propertyDeclaration = (IPropertyDeclaration)member;
+
 				for (int i = 0; i < Patterns.Length; i++)
 					propertyMarked[i] = false;
 
@@ -68,17 +70,19 @@ namespace AttributeRulesPlugin
 							propertyMarked[i] = true;
 							if (errorMessage != null)
 								consumer.AddHighlighting(
-									new MissingAttributeHighlighting(attribute, errorMessage),
+									new MissingAttributeHighlighting(attribute, errorMessage, Patterns[i].GetPropertyFixes(propertyDeclaration)),
 									attribute.GetDocumentRange(),
 									attribute.GetContainingFile());
 						}
 					}
 
 				for (int i = 0; i < Patterns.Length; i++)
+				{
 					if (propertyMarked[i])
-						markedProperties[i].Add((IPropertyDeclaration)member);
+						markedProperties[i].Add(propertyDeclaration);
 					else
-						notMarkedProperties[i].Add((IPropertyDeclaration)member);
+						notMarkedProperties[i].Add(propertyDeclaration);
+				}
 			}
 
 			for (int i = 0; i < Patterns.Length; i++)
@@ -90,7 +94,7 @@ namespace AttributeRulesPlugin
 						var highlightedElement = notMarkerdPoperty.NameIdentifier;
 
 						consumer.AddHighlighting(
-							new MissingAttributeHighlighting(highlightedElement, Patterns[i].MissingFieldAttributeErrorMessage),
+							new MissingAttributeHighlighting(highlightedElement, Patterns[i].MissingFieldAttributeErrorMessage, Patterns[i].GetPropertyFixes(notMarkerdPoperty)),
 							highlightedElement.GetDocumentRange(),
 							highlightedElement.GetContainingFile());
 					}
@@ -101,7 +105,7 @@ namespace AttributeRulesPlugin
 					var highlightedElement = classDeclaration.NameIdentifier;
 
 					consumer.AddHighlighting(
-						new MissingAttributeHighlighting(highlightedElement, Patterns[i].MissingClassAttributeErrorMessage),
+						new MissingAttributeHighlighting(highlightedElement, Patterns[i].MissingClassAttributeErrorMessage, Patterns[i].GetClassFixes(classDeclaration)),
 						highlightedElement.GetDocumentRange(),
 						highlightedElement.GetContainingFile());
 				}

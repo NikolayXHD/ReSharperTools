@@ -1,6 +1,7 @@
+using JetBrains.ReSharper.Intentions.Extensibility;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace AttributeRulesPlugin
+namespace AbbyyLS.ReSharper
 {
 	interface IAttributeUsagePattern
 	{
@@ -15,5 +16,9 @@ namespace AttributeRulesPlugin
 		string MissingFieldAttributeErrorMessage { get; }
 
 		string MissingClassAttributeErrorMessage { get; }
+
+		IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration);
+
+		IBulbAction[] GetClassFixes(IClassDeclaration declaration);
 	}
 }

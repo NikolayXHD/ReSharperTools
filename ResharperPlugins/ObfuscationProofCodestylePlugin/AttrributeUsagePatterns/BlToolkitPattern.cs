@@ -1,8 +1,9 @@
+using JetBrains.ReSharper.Intentions.Extensibility;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace AttributeRulesPlugin
+namespace AbbyyLS.ReSharper
 {
-	class BlToolkitAttributePattern : IAttributeUsagePattern
+	class BlToolkitPattern : IAttributeUsagePattern
 	{
 		private const string TableNameAttribute = "BLToolkit.DataAccess.TableNameAttribute";
 		private const string MapAttribute = "BLToolkit.Mapping.MapFieldAttribute";
@@ -63,6 +64,20 @@ namespace AttributeRulesPlugin
 		public string MissingClassAttributeErrorMessage
 		{
 			get { return "Missing [TableName(\"...\")] attribute"; }
+		}
+
+		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)
+		{
+			return new IBulbAction[]
+			{
+				new AddMapFiedAttribute(declaration),
+				new AddMapIgnoreAttribute(declaration)
+			};
+		}
+
+		public IBulbAction[] GetClassFixes(IClassDeclaration declaration)
+		{
+			return new IBulbAction[] {new AddTableNameAttribute(declaration)};
 		}
 	}
 }

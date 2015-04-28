@@ -2,7 +2,7 @@
 using JetBrains.ActionManagement;
 using JetBrains.Application.DataContext;
 
-namespace AttributeRulesPlugin
+namespace AbbyyLS.ReSharper
 {
 	[ActionHandler("AttributeRulesPlugin.About")]
 	public class AboutAction : IActionHandler
@@ -16,7 +16,7 @@ namespace AttributeRulesPlugin
 		public void Execute(IDataContext context, DelegateExecute nextExecute)
 		{
 			MessageBox.Show(
-			  "Attribute inspections\nAbbyy Language Services\n\nChecks code against attribute usage rules to prevent obfuscation from breaking functionality.",
+			  "Obfuscation codestyle\nAbbyy Language Services\n\nChecks code against attribute usage rules to prevent obfuscation from breaking functionality.",
 			  "About Attribute inspections",
 			  MessageBoxButtons.OK,
 			  MessageBoxIcon.Information);

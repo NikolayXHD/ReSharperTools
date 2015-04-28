@@ -5,21 +5,21 @@ using JetBrains.Application.PluginSupport;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AttributeRulesPlugin")]
-[assembly: AssemblyDescription("Checks code against attribute usage rules to prevent obfuscation from breaking functionality")]
+[assembly: AssemblyTitle("OfuscationCodestylePlugin")]
+[assembly: AssemblyDescription("Inspects code to make sure it follows obfuscation-proof patterns. Provides quick fixes to found errors.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Abbyy Language Services")]
-[assembly: AssemblyProduct("AttributeRulesPlugin")]
+[assembly: AssemblyProduct("Obfuscation codestyle ReSharper plugin")]
 [assembly: AssemblyCopyright("Copyright © Abbyy Language Services, 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 
-[assembly: ActionsXml("AttributeRulesPlugin.Actions.xml")]
+[assembly: ActionsXml("OfuscationCodestylePlugin.Actions.xml")]
 
 // The following information is displayed by ReSharper in the Plugins dialog
-[assembly: PluginTitle("Attribute inspections")]
-[assembly: PluginDescription("Checks code against attribute usage rules to prevent obfuscation from breaking functionality")]
+[assembly: PluginTitle("Obfuscation codestyle")]
+[assembly: PluginDescription("Inspects code to make sure it follows obfuscation-proof patterns. Provides quick fixes to found errors.")]
 [assembly: PluginVendor("Abbyy Language Services")]

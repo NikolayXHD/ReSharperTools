@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Impl.reflection2.elements.Context;
 using JetBrains.ReSharper.Psi.JavaScript.Resolve;
 
-namespace AttributeRulesPlugin
+namespace AbbyyLS.ReSharper
 {
 	static class AttributeExtensions
 	{

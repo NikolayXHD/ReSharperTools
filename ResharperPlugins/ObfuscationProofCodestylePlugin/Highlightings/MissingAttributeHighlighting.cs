@@ -1,21 +1,6 @@
-﻿/*
- * Copyright 2007-2011 JetBrains s.r.o.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-using AttributeRulesPlugin;
+﻿using AbbyyLS.ReSharper;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Intentions.Extensibility;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -27,7 +12,7 @@ using JetBrains.ReSharper.Psi.Tree;
   Severity.ERROR,
   false)]
 
-namespace AttributeRulesPlugin
+namespace AbbyyLS.ReSharper
 {
 	[ConfigurableSeverityHighlighting(SeverityId, CSharpLanguage.Name, OverlapResolve = OverlapResolveKind.WARNING)]
 	public class MissingAttributeHighlighting : IHighlighting
@@ -36,11 +21,13 @@ namespace AttributeRulesPlugin
 
 		private readonly ITreeNode _expression;
 		private readonly string _message;
+		private readonly IBulbAction[] _fixes;
 
-		public MissingAttributeHighlighting(ITreeNode expression, string message)
+		public MissingAttributeHighlighting(ITreeNode expression, string message, IBulbAction[] fixes)
 		{
 			_expression = expression;
 			_message = message;
+			_fixes = fixes;
 		}
 
 		public string ToolTip
@@ -62,5 +49,7 @@ namespace AttributeRulesPlugin
 		{
 			return _expression == null || _expression.IsValid();
 		}
+
+		public IBulbAction[] Fixes { get { return _fixes; } }
 	}
 }

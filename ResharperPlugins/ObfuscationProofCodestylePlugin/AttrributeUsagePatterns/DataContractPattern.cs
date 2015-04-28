@@ -1,8 +1,9 @@
+using JetBrains.ReSharper.Intentions.Extensibility;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace AttributeRulesPlugin
+namespace AbbyyLS.ReSharper
 {
-	class DataContractAttributePattern : IAttributeUsagePattern
+	class DataContractPattern : IAttributeUsagePattern
 	{
 		private const string DataContractAttribute = "System.Runtime.Serialization.DataContractAttribute";
 		private const string DataMemberAttribute = "System.Runtime.Serialization.DataMemberAttribute";
@@ -66,6 +67,20 @@ namespace AttributeRulesPlugin
 		public string MissingClassAttributeErrorMessage
 		{
 			get { return "Missing serialization attribute [DataContract(Name=\"...\")]"; }
+		}
+
+		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)
+		{
+			return new IBulbAction[]
+			{
+				new AddDataMemberAttribute(declaration),
+				new AddIgnoreDataMemberAttribute(declaration)
+			};
+		}
+
+		public IBulbAction[] GetClassFixes(IClassDeclaration declaration)
+		{
+			return new IBulbAction[] { new AddDataContractAttribute(declaration) };
 		}
 	}
 }
