@@ -1,3 +1,3 @@
-1. êîïèðîâàòü ïàïêó Plugins â C:\Program Files (x86)\JetBrains\ReSharper\v8.1\Bin
-2. Çàïóñòèòü VisualStudio
-3. Åñëè ïëàãèí ïîäöåïèëñÿ, åãî ìîæíî óâèäåòü â Resharper->Options->Plugins â âèäå çàãîëîâêà Attribute inspections 1.0.0.0
+ï»¿1. ÐºÐ¾Ð¿Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¿Ð°Ð¿ÐºÑƒ Plugins Ð² C:\Program Files (x86)\JetBrains\ReSharper\v8.1\Bin
+2. Ð—Ð°Ð¿ÑƒÑÑ‚Ð¸Ñ‚ÑŒ VisualStudio
+3. Ð•ÑÐ»Ð¸ Ð¿Ð»Ð°Ð³Ð¸Ð½ Ð¿Ð¾Ð´Ñ†ÐµÐ¿Ð¸Ð»ÑÑ, ÐµÐ³Ð¾ Ð¼Ð¾Ð¶Ð½Ð¾ ÑƒÐ²Ð¸Ð´ÐµÑ‚ÑŒ Ð² Resharper->Options->Plugins Ð² Ð²Ð¸Ð´Ðµ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐ° Obfuscation proof codestyle 1.1.0.0
