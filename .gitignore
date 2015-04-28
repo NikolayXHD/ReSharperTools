@@ -1,0 +1,16 @@
+*.user
+*.suo
+*.DotSettings
+Bin/
+obj/
+TestResults
+*.dbmdl
+*.log
+*.VisualState.xml
+TestResult.xml
+Published/ModuleHosting/*
+Published/Web/*
+Published/etc/
+Published/nuget/
+*.tss
+packages/
