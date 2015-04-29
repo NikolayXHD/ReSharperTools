@@ -22,36 +22,54 @@ namespace AbbyyLS.ReSharper
 			if (name != DataContractAttribute)
 				return false;
 
-			if (!hasNameProperty(a))
+			var namePropertyAssignment = a.PropertyAssignments.FirstOrDefault(ass => ass.PropertyNameIdentifier.Name == "Name");
+			if (!(namePropertyAssignment != null))
 				errorMessage = "[DataContract(Name=\"<missing parameter here>\")]";
 
 			return true;
-		}
-
-		private static bool hasNameProperty(IAttribute a)
-		{
-			return a.PropertyAssignments.Any(ass => ass.PropertyNameIdentifier.Name == "Name");
 		}
 
 		public bool IsFieldAttribute(IAttribute a, out string errorMessage)
 		{
 			errorMessage = null;
 
+			var field = a.GetContainingTypeMemberDeclaration();
+			
+			if (field == null || field.NameIdentifier == null)
+				return false;
+			
 			var type = a.GetAttributeType();
 
 			if (type == null)
 				return false;
 
-			var name = type.GetClrName().FullName;
+			var attributeTypeName = type.GetClrName().FullName;
 
-			if (IngnoreDataMemberAttribute == name)
+			if (attributeTypeName == IngnoreDataMemberAttribute)
 				return true;
 
-			if (DataMemberAttribute != name)
+			if (attributeTypeName != DataMemberAttribute)
 				return false;
 
-			if (!hasNameProperty(a))
+			var namePropertyAssignment = a.PropertyAssignments.FirstOrDefault(ass => ass.PropertyNameIdentifier.Name == "Name");
+
+			if (namePropertyAssignment == null || namePropertyAssignment.Source == null || !namePropertyAssignment.Source.ConstantValue.IsString())
 				errorMessage = "[DataContract(Name=\"<missing parameter here>\")]";
+			else if (a.GetContainingTypeDeclaration().NameIdentifier.Name.EndsWith("Model"))
+			{
+				var memberName = field.NameIdentifier.Name;
+				var propertyValue = (string) namePropertyAssignment.Source.ConstantValue.Value;
+
+				if (memberName == propertyValue)
+				{
+					// warn if not attribute value is not in lower camel case
+					var memberNameFirstChar = memberName.Substring(0, 1);
+					if (memberNameFirstChar.ToUpperInvariant() == memberNameFirstChar)
+						errorMessage = "[DataContract(Name=\"<expectingLowerCamelCase>\")]";
+				}
+
+				// value was intentionally changed from default
+			}
 
 			return true;
 		}
@@ -71,9 +89,11 @@ namespace AbbyyLS.ReSharper
 
 		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)
 		{
+			bool lowerCamelCase = declaration.GetContainingTypeDeclaration().NameIdentifier.Name.EndsWith("Model");
+
 			return new IBulbAction[]
 			{
-				new AddDataMemberAttribute(declaration),
+				new AddDataMemberAttribute(declaration, lowerCamelCase),
 				new AddIgnoreDataMemberAttribute(declaration)
 			};
 		}

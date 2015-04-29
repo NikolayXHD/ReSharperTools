@@ -14,7 +14,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>b762992a</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>e5f4d6ee</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,7 +62,6 @@
     <Compile Include="AttrributeUsagePatterns\DataContractPattern.cs" />
     <Compile Include="AttrributeUsagePatterns\MongoPattern.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AboutAction.cs" />
     <Compile Include="QuickFixes\AddBsonElementAttribute.cs" />
     <Compile Include="QuickFixes\AddBsonIdAttribute.cs" />
     <Compile Include="QuickFixes\AddBsonIgnoreAttribute.cs" />
@@ -75,12 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="ReadMe.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Actions.xml" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

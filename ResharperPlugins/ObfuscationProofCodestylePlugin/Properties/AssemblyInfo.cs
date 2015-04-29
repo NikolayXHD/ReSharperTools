@@ -14,12 +14,12 @@ using JetBrains.Application.PluginSupport;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]
 
 [assembly: ActionsXml("OfuscationProofCodestylePlugin.Actions.xml")]
 
 // The following information is displayed by ReSharper in the Plugins dialog
-[assembly: PluginTitle("Obfuscation proof codestyle")]
+[assembly: PluginTitle("Obfuscation-proof codestyle")]
 [assembly: PluginDescription("Inspects code to make sure it follows obfuscation-proof patterns. Provides quick fixes to found errors.")]
 [assembly: PluginVendor("Abbyy Language Services")]

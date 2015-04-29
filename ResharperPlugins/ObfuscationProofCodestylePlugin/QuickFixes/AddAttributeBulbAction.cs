@@ -109,7 +109,7 @@ namespace AbbyyLS.ReSharper
 
 		public string Text
 		{
-			get { return string.Format(DescriptionPattern, _propertyDeclaration.NameIdentifier.Name); }
+			get { return string.Format(DescriptionPattern, FixedParamValue ?? NamedParamValue); }
 		}
 
 		protected abstract string AttributeName { get; }
@@ -122,6 +122,9 @@ namespace AbbyyLS.ReSharper
 
 		protected abstract string DescriptionPattern { get; }
 
-		protected string PropertyName { get { return _propertyDeclaration.NameIdentifier.Name; } }
+		protected string PropertyName
+		{
+			get { return _propertyDeclaration.NameIdentifier.Name; }
+		}
 	}
 }
