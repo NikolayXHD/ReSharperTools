@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
@@ -33,9 +35,10 @@ namespace AbbyyLS.ReSharper
 			var resolveContext = _propertyDeclaration.GetProject().GetResolveContext();
 
 			var attributeType = getAttributeType(psiModule, resolveContext, AttributeName);
-			var attributeDeclaration = createAttributeDeclaration(attributeType, FixedParamValue, NamedParamName, NamedParamValue, psiModule, resolveContext);
+			var originalAttribute = _propertyDeclaration.Attributes.FirstOrDefault(a => Equals(a.GetAttributeType(), attributeType));
+			var attributeDeclaration = createAttributeDeclaration(attributeType, FixedParamValue, NamedParamName, NamedParamValue, psiModule, resolveContext, originalAttribute);
 
-			addOrReplaceAttribute(_propertyDeclaration, attributeDeclaration, attributeType, GetType().Name);
+			addOrReplaceAttribute(_propertyDeclaration, attributeDeclaration, originalAttribute, GetType().Name);
 			reformatSourceCode(_propertyDeclaration, solution);
 		}
 
@@ -44,10 +47,10 @@ namespace AbbyyLS.ReSharper
 			return TypeElementUtil.GetTypeElementByClrName(new ClrTypeName(attributeName), psiModule, resolveContext);
 		}
 
-		private static IAttribute createAttributeDeclaration(ITypeElement attributeType, string fixedParamValue, string namedParamName, string namedParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext)
+		private static IAttribute createAttributeDeclaration(ITypeElement attributeType, string fixedParamValue, string namedParamName, string namedParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext, IAttribute originalAttribute)
 		{
 			var fixedArguments = createFixedArguments(fixedParamValue, psiModule, resolveContext);
-			var namedArguments = createNamedArguments(namedParamName, namedParamValue, psiModule, resolveContext);
+			var namedArguments = createNamedArguments(namedParamName, namedParamValue, psiModule, resolveContext, originalAttribute);
 
 			var elementFactory = CSharpElementFactory.GetInstance(psiModule);
 			var attributeDeclaration = elementFactory.CreateAttribute(attributeType, fixedArguments, namedArguments);
@@ -62,21 +65,40 @@ namespace AbbyyLS.ReSharper
 			return fixedArguments;
 		}
 
-		private static Pair<string, AttributeValue>[] createNamedArguments(string positionalParamName, string positionalParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext)
+		private static Pair<string, AttributeValue>[] createNamedArguments(string namedParamName, string namedParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext, IAttribute originalAttribute)
 		{
-			var namedArguments = positionalParamName != null
-				? new[] { new Pair<string, AttributeValue>(positionalParamName, new AttributeValue(new ConstantValue(positionalParamValue, psiModule, resolveContext))) }
-				: new Pair<string, AttributeValue>[0];
-			return namedArguments;
+			if (namedParamName == null && (originalAttribute == null || originalAttribute.PropertyAssignments.Count == 0))
+				return new Pair<string, AttributeValue>[0];
+			
+			var result = originalAttribute != null
+				? convertOriginalPropertyAssignments(namedParamName, originalAttribute)
+				: Enumerable.Empty<Pair<string, AttributeValue>>();
+
+			if (namedParamName != null)
+				result = result.Concat(
+					new[]
+					{
+						new Pair<string, AttributeValue>(
+							namedParamName, 
+							new AttributeValue(new ConstantValue(namedParamValue, psiModule, resolveContext)))
+					});
+
+			return result.ToArray();
 		}
 
-		private static void addOrReplaceAttribute(T propertyDeclaration, IAttribute attributeDeclaration, ITypeElement attributeType, string commandName)
+		private static IEnumerable<Pair<string, AttributeValue>> convertOriginalPropertyAssignments(string namedParamName, IAttribute originalAttribute)
+		{
+			return originalAttribute.PropertyAssignments
+				.Where(ass => ass.PropertyNameIdentifier.Name != namedParamName)
+				.Select(propertyAssignment => new Pair<string, AttributeValue>(
+					propertyAssignment.PropertyNameIdentifier.Name,
+					new AttributeValue(propertyAssignment.Source.ConstantValue)));
+		}
+
+		private static void addOrReplaceAttribute(T propertyDeclaration, IAttribute attributeDeclaration, IAttribute originalAttribute, string commandName)
 		{
 			propertyDeclaration.GetPsiServices().Transactions.Execute(commandName, () =>
 			{
-				var originalAttribute = propertyDeclaration.Attributes
-					.FirstOrDefault(a => Equals(a.GetAttributeType(), attributeType));
-
 				if (originalAttribute != null)
 					replaceAttribute(originalAttribute, attributeDeclaration);
 				else
