@@ -31,7 +31,15 @@ namespace AbbyyLS.ReSharper
 
 		protected override string NamedParamValue
 		{
-			get { return PropertyName; }
+			get 
+			{
+				var propertyName = PropertyName;
+
+				if (!propertyName.EndsWith("Model"))
+					return propertyName;
+
+				return propertyName.Substring(0, propertyName.Length - "Model".Length);
+			}
 		}
 	}
 }
