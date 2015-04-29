@@ -20,5 +20,7 @@ namespace AbbyyLS.ReSharper
 		IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration);
 
 		IBulbAction[] GetClassFixes(IClassDeclaration declaration);
+
+		bool MustClassFollowPattern(IClassDeclaration declaration);
 	}
 }

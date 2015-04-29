@@ -68,16 +68,33 @@ namespace AbbyyLS.ReSharper
 
 		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)
 		{
+			var map = new AddMapFiedAttribute(declaration);
+			var ignore = new AddMapIgnoreAttribute(declaration);
+
+			if (declaration.AccessorDeclarations.Count < 2)
+			{
+				return new IBulbAction[]
+				{
+					ignore,
+					map
+				};
+			}
+
 			return new IBulbAction[]
 			{
-				new AddMapFiedAttribute(declaration),
-				new AddMapIgnoreAttribute(declaration)
+				map,
+				ignore
 			};
 		}
 
 		public IBulbAction[] GetClassFixes(IClassDeclaration declaration)
 		{
-			return new IBulbAction[] {new AddTableNameAttribute(declaration)};
+			return new IBulbAction[] { new AddTableNameAttribute(declaration) };
+		}
+
+		public bool MustClassFollowPattern(IClassDeclaration declaration)
+		{
+			return false;
 		}
 	}
 }

@@ -71,6 +71,7 @@
     <Compile Include="QuickFixes\AddMapFiedAttribute.cs" />
     <Compile Include="QuickFixes\AddMapIgnoreAttribute.cs" />
     <Compile Include="QuickFixes\AddTableNameAttribute.cs" />
+    <Compile Include="IdentifierUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -22,24 +22,24 @@ namespace AbbyyLS.ReSharper
 	public abstract class AddAttributeBulbAction<T> : IBulbAction
 		where T : ICSharpDeclaration, IAttributesOwnerDeclaration
 	{
-		private readonly T _propertyDeclaration;
+		protected readonly T PropertyDeclaration;
 
 		protected AddAttributeBulbAction(T propertyDeclaration)
 		{
-			_propertyDeclaration = propertyDeclaration;
+			PropertyDeclaration = propertyDeclaration;
 		}
 
 		public void Execute(ISolution solution, ITextControl textControl)
 		{
-			var psiModule = _propertyDeclaration.GetPsiModule();
-			var resolveContext = _propertyDeclaration.GetProject().GetResolveContext();
+			var psiModule = PropertyDeclaration.GetPsiModule();
+			var resolveContext = PropertyDeclaration.GetProject().GetResolveContext();
 
 			var attributeType = getAttributeType(psiModule, resolveContext, AttributeName);
-			var originalAttribute = _propertyDeclaration.Attributes.FirstOrDefault(a => Equals(a.GetAttributeType(), attributeType));
+			var originalAttribute = PropertyDeclaration.Attributes.FirstOrDefault(a => Equals(a.GetAttributeType(), attributeType));
 			var attributeDeclaration = createAttributeDeclaration(attributeType, FixedParamValue, NamedParamName, NamedParamValue, psiModule, resolveContext, originalAttribute);
 
-			addOrReplaceAttribute(_propertyDeclaration, attributeDeclaration, originalAttribute, GetType().Name);
-			reformatSourceCode(_propertyDeclaration, solution);
+			addOrReplaceAttribute(PropertyDeclaration, attributeDeclaration, originalAttribute, GetType().Name);
+			reformatSourceCode(PropertyDeclaration, solution);
 		}
 
 		private static ITypeElement getAttributeType(IPsiModule psiModule, IModuleReferenceResolveContext resolveContext, string attributeName)
@@ -136,17 +136,12 @@ namespace AbbyyLS.ReSharper
 
 		protected abstract string AttributeName { get; }
 
-		protected virtual string FixedParamValue { get { return PropertyName; } }
+		protected virtual string FixedParamValue { get { return PropertyDeclaration.DeclaredName; } }
 
 		protected virtual string NamedParamName { get { return null; } }
 
 		protected virtual string NamedParamValue { get { return null; } }
 
 		protected abstract string DescriptionPattern { get; }
-
-		protected string PropertyName
-		{
-			get { return _propertyDeclaration.NameIdentifier.Name; }
-		}
 	}
 }

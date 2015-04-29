@@ -34,10 +34,10 @@ namespace AbbyyLS.ReSharper
 			errorMessage = null;
 
 			var field = a.GetContainingTypeMemberDeclaration();
-			
+
 			if (field == null || field.NameIdentifier == null)
 				return false;
-			
+
 			var type = a.GetAttributeType();
 
 			if (type == null)
@@ -55,10 +55,10 @@ namespace AbbyyLS.ReSharper
 
 			if (namePropertyAssignment == null || namePropertyAssignment.Source == null || !namePropertyAssignment.Source.ConstantValue.IsString())
 				errorMessage = "[DataMember(Name=\"<missing parameter here>\")]";
-			else if (a.GetContainingTypeDeclaration().NameIdentifier.Name.EndsWith("Model"))
+			else if (a.GetContainingTypeDeclaration().DeclaredName.EndsWith("Model"))
 			{
-				var memberName = field.NameIdentifier.Name;
-				var propertyValue = (string) namePropertyAssignment.Source.ConstantValue.Value;
+				var memberName = field.DeclaredName;
+				var propertyValue = (string)namePropertyAssignment.Source.ConstantValue.Value;
 
 				if (memberName == propertyValue)
 				{
@@ -89,18 +89,26 @@ namespace AbbyyLS.ReSharper
 
 		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)
 		{
-			bool lowerCamelCase = declaration.GetContainingTypeDeclaration().NameIdentifier.Name.EndsWith("Model");
+			var map = new AddDataMemberAttribute(declaration);
+			var ignore = new AddIgnoreDataMemberAttribute(declaration);
 
 			return new IBulbAction[]
 			{
-				new AddDataMemberAttribute(declaration, lowerCamelCase),
-				new AddIgnoreDataMemberAttribute(declaration)
+				map,
+				ignore
 			};
 		}
 
 		public IBulbAction[] GetClassFixes(IClassDeclaration declaration)
 		{
 			return new IBulbAction[] { new AddDataContractAttribute(declaration) };
+		}
+
+		public bool MustClassFollowPattern(IClassDeclaration declaration)
+		{
+			var name = declaration.DeclaredName;
+
+			return name.EndsWith("Model") || name.EndsWith("Config") || name.EndsWith("ConfigSection");
 		}
 	}
 }

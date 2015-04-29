@@ -68,17 +68,42 @@ namespace AbbyyLS.ReSharper
 
 		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)
 		{
+			var map = new AddBsonElementAttribute(declaration);
+			var ignore = new AddBsonIgnoreAttribute(declaration);
+			var mapId = new AddBsonIdAttribute(declaration);
+			
+			if (declaration.AccessorDeclarations.Count < 2)
+				return new IBulbAction[]
+				{
+					ignore,
+					map,
+					mapId
+				};
+
+			if (declaration.DeclaredName.ToLowerInvariant() == "id")
+				return new IBulbAction[]
+				{
+					mapId,
+					map,
+					ignore
+				};
+
 			return new IBulbAction[]
 			{
-				new AddBsonElementAttribute(declaration),
-				new AddBsonIgnoreAttribute(declaration),
-				new AddBsonIdAttribute(declaration)
+				map,
+				mapId,
+				ignore
 			};
 		}
 
 		public IBulbAction[] GetClassFixes(IClassDeclaration declaration)
 		{
 			return null;
+		}
+
+		public bool MustClassFollowPattern(IClassDeclaration declaration)
+		{
+			return false;
 		}
 	}
 }

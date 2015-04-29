@@ -4,12 +4,9 @@ namespace AbbyyLS.ReSharper
 {
 	public class AddDataMemberAttribute : AddAttributeBulbAction<IPropertyDeclaration>
 	{
-		private readonly bool _lowerCamelCase;
-
-		public AddDataMemberAttribute(IPropertyDeclaration propertyDeclaration, bool lowerCamelCase)
+		public AddDataMemberAttribute(IPropertyDeclaration propertyDeclaration)
 			:base(propertyDeclaration)
 		{
-			_lowerCamelCase = lowerCamelCase;
 		}
 
 		protected override string AttributeName
@@ -36,20 +33,14 @@ namespace AbbyyLS.ReSharper
 		{
 			get
 			{
-				var name = PropertyName;
-				if (!_lowerCamelCase)
-					return name;
+				var typeName = PropertyDeclaration.GetContainingTypeDeclaration().DeclaredName;
+				var propertyName = PropertyDeclaration.DeclaredName;
 
-				return toLowerCamelCase(PropertyName);
+				if (typeName.EndsWith("Model"))
+					return IdentifierUtil.ToLowerCamelCase(propertyName);
+				
+				return propertyName;
 			}
-		}
-
-		private static string toLowerCamelCase(string identifier)
-		{
-			if (identifier.Length == 1)
-				return identifier.Substring(0, 1).ToLowerInvariant();
-
-			return identifier.Substring(0, 1).ToLowerInvariant() + identifier.Substring(1);
 		}
 	}
 }

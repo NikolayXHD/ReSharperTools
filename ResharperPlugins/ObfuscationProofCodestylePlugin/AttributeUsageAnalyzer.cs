@@ -24,6 +24,10 @@ namespace AbbyyLS.ReSharper
 			var classDeclaration = (IClassDeclaration)element;
 
 			bool[] classMarked = new bool[Patterns.Length];
+			bool[] classMustFollowPattern = new bool[Patterns.Length];
+
+			for (int i = 0; i < Patterns.Length; i++)
+				classMustFollowPattern[i] = Patterns[i].MustClassFollowPattern(classDeclaration);
 
 			foreach (var attribute in classDeclaration.Attributes)
 				for (int i = 0; i < Patterns.Length; i++)
@@ -100,7 +104,7 @@ namespace AbbyyLS.ReSharper
 					}
 				}
 
-				if (!classMarked[i] && markedProperties[i].Count > 0 && Patterns[i].MandatoryAttributeOnClass)
+				if (!classMarked[i] && (markedProperties[i].Count > 0 || classMustFollowPattern[i]) && Patterns[i].MandatoryAttributeOnClass)
 				{
 					var highlightedElement = classDeclaration.NameIdentifier;
 
