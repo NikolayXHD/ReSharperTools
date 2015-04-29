@@ -23,7 +23,7 @@ namespace AbbyyLS.ReSharper
 				return false;
 
 			var namePropertyAssignment = a.PropertyAssignments.FirstOrDefault(ass => ass.PropertyNameIdentifier.Name == "Name");
-			if (!(namePropertyAssignment != null))
+			if (namePropertyAssignment == null)
 				errorMessage = "[DataContract(Name=\"<missing parameter here>\")]";
 
 			return true;
@@ -54,7 +54,7 @@ namespace AbbyyLS.ReSharper
 			var namePropertyAssignment = a.PropertyAssignments.FirstOrDefault(ass => ass.PropertyNameIdentifier.Name == "Name");
 
 			if (namePropertyAssignment == null || namePropertyAssignment.Source == null || !namePropertyAssignment.Source.ConstantValue.IsString())
-				errorMessage = "[DataContract(Name=\"<missing parameter here>\")]";
+				errorMessage = "[DataMember(Name=\"<missing parameter here>\")]";
 			else if (a.GetContainingTypeDeclaration().NameIdentifier.Name.EndsWith("Model"))
 			{
 				var memberName = field.NameIdentifier.Name;
@@ -65,7 +65,7 @@ namespace AbbyyLS.ReSharper
 					// warn if not attribute value is not in lower camel case
 					var memberNameFirstChar = memberName.Substring(0, 1);
 					if (memberNameFirstChar.ToUpperInvariant() == memberNameFirstChar)
-						errorMessage = "[DataContract(Name=\"<expectingLowerCamelCase>\")]";
+						errorMessage = "[DataMember(Name=\"<expectingLowerCamelCase>\")]";
 				}
 
 				// value was intentionally changed from default
@@ -79,12 +79,12 @@ namespace AbbyyLS.ReSharper
 
 		public string MissingFieldAttributeErrorMessage
 		{
-			get { return "Missing field serialization attribute such as [DataMember(Name=\"...\")], [IngnoreDataMember]"; }
+			get { return "Missing attribute such as [DataMember(Name=\"...\")], [IngnoreDataMember]"; }
 		}
 
 		public string MissingClassAttributeErrorMessage
 		{
-			get { return "Missing serialization attribute [DataContract(Name=\"...\")]"; }
+			get { return "Missing attribute [DataContract(Name=\"...\")]"; }
 		}
 
 		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)

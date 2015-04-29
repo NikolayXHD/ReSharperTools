@@ -58,12 +58,12 @@ namespace AbbyyLS.ReSharper
 
 		public string MissingFieldAttributeErrorMessage
 		{
-			get { return "Missing BlToolkit attribute such as [MapField(\"...\")], [MapIgnore]"; }
+			get { return "Missing attribute such as [MapField(\"...\")], [MapIgnore]"; }
 		}
 
 		public string MissingClassAttributeErrorMessage
 		{
-			get { return "Missing [TableName(\"...\")] attribute"; }
+			get { return "Missing attribute [TableName(\"...\")] "; }
 		}
 
 		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)

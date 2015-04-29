@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Intentions.Extensibility;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -59,12 +58,12 @@ namespace AbbyyLS.ReSharper
 
 		public string MissingFieldAttributeErrorMessage
 		{
-			get { return "Missing mongo field attribute such as [BsonId], [BsonElement(\"...\")], [BsonIgnore]"; }
+			get { return "Missing attribute such as [BsonId], [BsonElement(\"...\")], [BsonIgnore]"; }
 		}
 
 		public string MissingClassAttributeErrorMessage
 		{
-			get { throw new InvalidOperationException("mongochsarpdriver doesn't require class to be mapped by an attribute"); }
+			get { return "LOGICAL ERROR IN PLUGIN. Mongochsarpdriver doesn't require class to be mapped by an attribute"; }
 		}
 
 		public IBulbAction[] GetPropertyFixes(IPropertyDeclaration declaration)
