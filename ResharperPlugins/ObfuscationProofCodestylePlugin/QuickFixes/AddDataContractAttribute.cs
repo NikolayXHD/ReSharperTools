@@ -35,13 +35,12 @@ namespace AbbyyLS.ReSharper
 			{
 				var propertyName = PropertyDeclaration.DeclaredName;
 
-				if (!propertyName.EndsWith("Model"))
-					return propertyName;
+				if (propertyName.EndsWith("Model"))
+					return propertyName.Substring(0, propertyName.Length - "Model".Length);
+				if (propertyName.EndsWith("Config"))
+					return propertyName.Substring(0, propertyName.Length - "Config".Length);
 
-				var cutModel = propertyName.Substring(0, propertyName.Length - "Model".Length);
-				var result = IdentifierUtil.ToLowerCamelCase(cutModel);
-
-				return result;
+				return propertyName;
 			}
 		}
 	}

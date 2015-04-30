@@ -15,9 +15,10 @@ namespace AbbyyLS.ReSharper
 
 		private const string AttributeReqiuiringName = "MongoDB.Bson.Serialization.Attributes.BsonElementAttribute";
 
-		public bool IsClassAttribute(IAttribute a, out string errorMessage)
+		public bool IsClassAttribute(IAttribute a, out string errorMessage, out string warningMessage)
 		{
 			errorMessage = null;
+			warningMessage = null;
 
 			var type = a.GetAttributeType();
 
@@ -28,9 +29,10 @@ namespace AbbyyLS.ReSharper
 			return ns.QualifiedName == MongoSerializationAttributesNamespace;
 		}
 
-		public bool IsFieldAttribute(IAttribute a, out string errorMessage)
+		public bool IsFieldAttribute(IAttribute a, out string errorMessage, out string warningMessage)
 		{
 			errorMessage = null;
+			warningMessage = null;
 
 			var type = a.GetAttributeType();
 
@@ -101,7 +103,7 @@ namespace AbbyyLS.ReSharper
 			return null;
 		}
 
-		public bool MustClassFollowPattern(IClassDeclaration declaration)
+		public bool ShouldFollowPattern(IClassDeclaration declaration)
 		{
 			return false;
 		}

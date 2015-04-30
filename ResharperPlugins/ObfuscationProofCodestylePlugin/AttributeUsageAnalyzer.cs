@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace AbbyyLS.ReSharper
 {
-	[ElementProblemAnalyzer(new[] { typeof(IClassDeclaration) }, HighlightingTypes = new[] { typeof(MissingAttributeHighlighting) })]
+	[ElementProblemAnalyzer(new[] { typeof(IClassDeclaration) }, HighlightingTypes = new[] { typeof(AttributeErrorHighlighting) })]
 	public class AttributeUsageAnalyzer : IElementProblemAnalyzer
 	{
 		private static readonly IAttributeUsagePattern[] Patterns =
@@ -27,18 +27,24 @@ namespace AbbyyLS.ReSharper
 			bool[] classMustFollowPattern = new bool[Patterns.Length];
 
 			for (int i = 0; i < Patterns.Length; i++)
-				classMustFollowPattern[i] = Patterns[i].MustClassFollowPattern(classDeclaration);
+				classMustFollowPattern[i] = Patterns[i].ShouldFollowPattern(classDeclaration);
 
 			foreach (var attribute in classDeclaration.Attributes)
 				for (int i = 0; i < Patterns.Length; i++)
 				{
 					string errorMessage;
-					if (!classMarked[i] && Patterns[i].IsClassAttribute(attribute, out errorMessage))
+					string warningMessage;
+					if (!classMarked[i] && Patterns[i].IsClassAttribute(attribute, out errorMessage, out warningMessage))
 					{
 						classMarked[i] = true;
 						if (errorMessage != null)
 							consumer.AddHighlighting(
-								new MissingAttributeHighlighting(attribute, errorMessage, Patterns[i].GetClassFixes(classDeclaration)),
+								new AttributeErrorHighlighting(attribute, errorMessage, Patterns[i].GetClassFixes(classDeclaration)),
+								attribute.GetDocumentRange(),
+								attribute.GetContainingFile());
+						if (warningMessage != null)
+							consumer.AddHighlighting(
+								new AttributeWarningHighlighting(attribute, warningMessage, Patterns[i].GetClassFixes(classDeclaration)),
 								attribute.GetDocumentRange(),
 								attribute.GetContainingFile());
 					}
@@ -69,12 +75,19 @@ namespace AbbyyLS.ReSharper
 					for (int i = 0; i < Patterns.Length; i++)
 					{
 						string errorMessage;
-						if (!propertyMarked[i] && Patterns[i].IsFieldAttribute(attribute, out errorMessage))
+						string warningMessage;
+						if (!propertyMarked[i] && Patterns[i].IsFieldAttribute(attribute, out errorMessage, out warningMessage))
 						{
 							propertyMarked[i] = true;
 							if (errorMessage != null)
 								consumer.AddHighlighting(
-									new MissingAttributeHighlighting(attribute, errorMessage, Patterns[i].GetPropertyFixes(propertyDeclaration)),
+									new AttributeErrorHighlighting(attribute, errorMessage, Patterns[i].GetPropertyFixes(propertyDeclaration)),
+									attribute.GetDocumentRange(),
+									attribute.GetContainingFile());
+
+							if (warningMessage != null)
+								consumer.AddHighlighting(
+									new AttributeErrorHighlighting(attribute, warningMessage, Patterns[i].GetPropertyFixes(propertyDeclaration)),
 									attribute.GetDocumentRange(),
 									attribute.GetContainingFile());
 						}
@@ -98,7 +111,7 @@ namespace AbbyyLS.ReSharper
 						var highlightedElement = notMarkerdPoperty.NameIdentifier;
 
 						consumer.AddHighlighting(
-							new MissingAttributeHighlighting(highlightedElement, Patterns[i].MissingFieldAttributeErrorMessage, Patterns[i].GetPropertyFixes(notMarkerdPoperty)),
+							new AttributeErrorHighlighting(highlightedElement, Patterns[i].MissingFieldAttributeErrorMessage, Patterns[i].GetPropertyFixes(notMarkerdPoperty)),
 							highlightedElement.GetDocumentRange(),
 							highlightedElement.GetContainingFile());
 					}
@@ -109,7 +122,7 @@ namespace AbbyyLS.ReSharper
 					var highlightedElement = classDeclaration.NameIdentifier;
 
 					consumer.AddHighlighting(
-						new MissingAttributeHighlighting(highlightedElement, Patterns[i].MissingClassAttributeErrorMessage, Patterns[i].GetClassFixes(classDeclaration)),
+						new AttributeWarningHighlighting(highlightedElement, Patterns[i].MissingClassAttributeErrorMessage, Patterns[i].GetClassFixes(classDeclaration)),
 						highlightedElement.GetDocumentRange(),
 						highlightedElement.GetContainingFile());
 				}

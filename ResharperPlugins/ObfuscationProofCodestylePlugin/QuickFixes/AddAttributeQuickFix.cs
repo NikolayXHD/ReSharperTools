@@ -16,7 +16,12 @@ namespace AbbyyLS.ReSharper
 		/// For languages other than C# any inheritor of <see cref="IContextActionDataProvider"/> can 
 		/// be injected in this constructor.
 		/// </summary>
-		public AddAttributeQuickFix(MissingAttributeHighlighting provider)
+		public AddAttributeQuickFix(AttributeErrorHighlighting provider)
+		{
+			_items = provider.Fixes;
+		}
+
+		public AddAttributeQuickFix(AttributeWarningHighlighting provider)
 		{
 			_items = provider.Fixes;
 		}

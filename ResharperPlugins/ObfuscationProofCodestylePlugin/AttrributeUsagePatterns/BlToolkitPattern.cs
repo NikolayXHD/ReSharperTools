@@ -9,9 +9,10 @@ namespace AbbyyLS.ReSharper
 		private const string MapAttribute = "BLToolkit.Mapping.MapFieldAttribute";
 		private const string IgnoreAttribute = "BLToolkit.Mapping.MapIgnoreAttribute";
 
-		public bool IsClassAttribute(IAttribute a, out string errorMessage)
+		public bool IsClassAttribute(IAttribute a, out string errorMessage, out string warningMessage)
 		{
 			errorMessage = null;
+			warningMessage = null;
 
 			var type = a.GetAttributeType();
 
@@ -29,9 +30,10 @@ namespace AbbyyLS.ReSharper
 			return true;
 		}
 
-		public bool IsFieldAttribute(IAttribute a, out string errorMessage)
+		public bool IsFieldAttribute(IAttribute a, out string errorMessage, out string warningMessage)
 		{
 			errorMessage = null;
+			warningMessage = null;
 
 			var type = a.GetAttributeType();
 
@@ -92,7 +94,7 @@ namespace AbbyyLS.ReSharper
 			return new IBulbAction[] { new AddTableNameAttribute(declaration) };
 		}
 
-		public bool MustClassFollowPattern(IClassDeclaration declaration)
+		public bool ShouldFollowPattern(IClassDeclaration declaration)
 		{
 			return false;
 		}

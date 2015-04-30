@@ -4,26 +4,26 @@ using JetBrains.ReSharper.Intentions.Extensibility;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
 
-[assembly: RegisterConfigurableSeverity(MissingAttributeHighlighting.SeverityId,
+[assembly: RegisterConfigurableSeverity(AttributeWarningHighlighting.SeverityId,
   null,
   HighlightingGroupIds.ConstraintViolation,
-  "Missing required attribute",
+  "Attribute warning",
   "",
-  Severity.ERROR,
+  Severity.WARNING,
   false)]
 
 namespace AbbyyLS.ReSharper
 {
 	[ConfigurableSeverityHighlighting(SeverityId, CSharpLanguage.Name, OverlapResolve = OverlapResolveKind.WARNING)]
-	public class MissingAttributeHighlighting : IHighlighting
+	public class AttributeWarningHighlighting : IHighlighting
 	{
-		public const string SeverityId = "MissingRequiredAttribute";
+		public const string SeverityId = "AttributeWarning";
 
 		private readonly ITreeNode _expression;
 		private readonly string _message;
 		private readonly IBulbAction[] _fixes;
 
-		public MissingAttributeHighlighting(ITreeNode expression, string message, IBulbAction[] fixes)
+		public AttributeWarningHighlighting(ITreeNode expression, string message, IBulbAction[] fixes)
 		{
 			_expression = expression;
 			_message = message;

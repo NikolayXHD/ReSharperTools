@@ -5,9 +5,9 @@ namespace AbbyyLS.ReSharper
 {
 	interface IAttributeUsagePattern
 	{
-		bool IsClassAttribute(IAttribute a, out string errorMessage);
+		bool IsClassAttribute(IAttribute a, out string errorMessage, out string warningMessage);
 
-		bool IsFieldAttribute(IAttribute a, out string errorMessage);
+		bool IsFieldAttribute(IAttribute a, out string errorMessage, out string warningMessage);
 
 		bool MandatoryAttributeOnField { get; }
 
@@ -21,6 +21,6 @@ namespace AbbyyLS.ReSharper
 
 		IBulbAction[] GetClassFixes(IClassDeclaration declaration);
 
-		bool MustClassFollowPattern(IClassDeclaration declaration);
+		bool ShouldFollowPattern(IClassDeclaration declaration);
 	}
 }

@@ -9,9 +9,10 @@ namespace AbbyyLS.ReSharper
 		private const string DataMemberAttribute = "System.Runtime.Serialization.DataMemberAttribute";
 		private const string IngnoreDataMemberAttribute = "System.Runtime.Serialization.IgnoreDataMemberAttribute";
 
-		public bool IsClassAttribute(IAttribute a, out string errorMessage)
+		public bool IsClassAttribute(IAttribute a, out string errorMessage, out string warningMessage)
 		{
 			errorMessage = null;
+			warningMessage = null;
 
 			var type = a.GetAttributeType();
 
@@ -23,15 +24,31 @@ namespace AbbyyLS.ReSharper
 				return false;
 
 			var namePropertyAssignment = a.PropertyAssignments.FirstOrDefault(ass => ass.PropertyNameIdentifier.Name == "Name");
+			
+			const string missingParameterHere = "[DataContract(Name=\"<missing parameter here>\")]";
+
 			if (namePropertyAssignment == null)
-				errorMessage = "[DataContract(Name=\"<missing parameter here>\")]";
+				errorMessage = missingParameterHere;
+			else
+			{
+				var value = namePropertyAssignment.Source.ConstantValue.Value as string;
+				if (string.IsNullOrEmpty(value))
+					errorMessage = missingParameterHere;
+				else
+				{
+					var firstChar = value.Substring(0, 1);
+					if (firstChar.ToLowerInvariant() == firstChar)
+						warningMessage = "[DataContract(Name=\"<ExpectingUpperCaseHere>\")]";
+				}
+			}
 
 			return true;
 		}
 
-		public bool IsFieldAttribute(IAttribute a, out string errorMessage)
+		public bool IsFieldAttribute(IAttribute a, out string errorMessage, out string warningMessage)
 		{
 			errorMessage = null;
+			warningMessage = null;
 
 			var field = a.GetContainingTypeMemberDeclaration();
 
@@ -55,6 +72,7 @@ namespace AbbyyLS.ReSharper
 
 			if (namePropertyAssignment == null || namePropertyAssignment.Source == null || !namePropertyAssignment.Source.ConstantValue.IsString())
 				errorMessage = "[DataMember(Name=\"<missing parameter here>\")]";
+
 			else if (a.GetContainingTypeDeclaration().DeclaredName.EndsWith("Model"))
 			{
 				var memberName = field.DeclaredName;
@@ -65,7 +83,7 @@ namespace AbbyyLS.ReSharper
 					// warn if not attribute value is not in lower camel case
 					var memberNameFirstChar = memberName.Substring(0, 1);
 					if (memberNameFirstChar.ToUpperInvariant() == memberNameFirstChar)
-						errorMessage = "[DataMember(Name=\"<expectingLowerCamelCase>\")]";
+						warningMessage = "[DataMember(Name=\"<expectingLowerCamelCase>\")]";
 				}
 
 				// value was intentionally changed from default
@@ -104,7 +122,7 @@ namespace AbbyyLS.ReSharper
 			return new IBulbAction[] { new AddDataContractAttribute(declaration) };
 		}
 
-		public bool MustClassFollowPattern(IClassDeclaration declaration)
+		public bool ShouldFollowPattern(IClassDeclaration declaration)
 		{
 			var name = declaration.DeclaredName;
 
