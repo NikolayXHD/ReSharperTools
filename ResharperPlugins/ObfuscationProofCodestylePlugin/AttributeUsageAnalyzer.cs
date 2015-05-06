@@ -23,6 +23,9 @@ namespace AbbyyLS.ReSharper
 
 			var classDeclaration = (IClassDeclaration)element;
 
+			if (classDeclaration.IsStatic)
+				return;
+
 			bool[] classMarked = new bool[Patterns.Length];
 			bool[] classMustFollowPattern = new bool[Patterns.Length];
 
@@ -67,6 +70,9 @@ namespace AbbyyLS.ReSharper
 					continue;
 
 				var propertyDeclaration = (IPropertyDeclaration)member;
+
+				if (propertyDeclaration.IsStatic)
+					return;
 
 				for (int i = 0; i < Patterns.Length; i++)
 					propertyMarked[i] = false;
