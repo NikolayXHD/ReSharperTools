@@ -47,7 +47,7 @@ namespace AbbyyLS.ReSharper
 			return TypeElementUtil.GetTypeElementByClrName(new ClrTypeName(attributeName), psiModule, resolveContext);
 		}
 
-		private static IAttribute createAttributeDeclaration(ITypeElement attributeType, string fixedParamValue, string namedParamName, string namedParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext, IAttribute originalAttribute)
+		private IAttribute createAttributeDeclaration(ITypeElement attributeType, string fixedParamValue, string namedParamName, string namedParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext, IAttribute originalAttribute)
 		{
 			var fixedArguments = createFixedArguments(fixedParamValue, psiModule, resolveContext);
 			var namedArguments = createNamedArguments(namedParamName, namedParamValue, psiModule, resolveContext, originalAttribute);
@@ -65,11 +65,11 @@ namespace AbbyyLS.ReSharper
 			return fixedArguments;
 		}
 
-		private static Pair<string, AttributeValue>[] createNamedArguments(string namedParamName, string namedParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext, IAttribute originalAttribute)
+		private Pair<string, AttributeValue>[] createNamedArguments(string namedParamName, string namedParamValue, IPsiModule psiModule, IModuleReferenceResolveContext resolveContext, IAttribute originalAttribute)
 		{
 			if (namedParamName == null && (originalAttribute == null || originalAttribute.PropertyAssignments.Count == 0))
 				return new Pair<string, AttributeValue>[0];
-			
+
 			var result = originalAttribute != null
 				? convertOriginalPropertyAssignments(namedParamName, originalAttribute)
 				: Enumerable.Empty<Pair<string, AttributeValue>>();
@@ -86,10 +86,10 @@ namespace AbbyyLS.ReSharper
 			return result.ToArray();
 		}
 
-		private static IEnumerable<Pair<string, AttributeValue>> convertOriginalPropertyAssignments(string namedParamName, IAttribute originalAttribute)
+		private IEnumerable<Pair<string, AttributeValue>> convertOriginalPropertyAssignments(string namedParamName, IAttribute originalAttribute)
 		{
 			return originalAttribute.PropertyAssignments
-				.Where(ass => ass.PropertyNameIdentifier.Name != namedParamName)
+				.Where(ass => ass.PropertyNameIdentifier.Name != namedParamName && ass.PropertyNameIdentifier.Name != PropertyAssignmentNameToErase)
 				.Select(propertyAssignment => new Pair<string, AttributeValue>(
 					propertyAssignment.PropertyNameIdentifier.Name,
 					new AttributeValue(propertyAssignment.Source.ConstantValue)));
@@ -143,5 +143,10 @@ namespace AbbyyLS.ReSharper
 		protected virtual string NamedParamValue { get { return null; } }
 
 		protected abstract string DescriptionPattern { get; }
+
+		protected virtual string PropertyAssignmentNameToErase
+		{
+			get { return null; }
+		}
 	}
 }

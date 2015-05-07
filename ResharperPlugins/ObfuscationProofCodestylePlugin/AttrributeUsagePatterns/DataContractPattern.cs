@@ -23,23 +23,33 @@ namespace AbbyyLS.ReSharper
 			if (name != DataContractAttribute)
 				return false;
 
-			var namePropertyAssignment = a.PropertyAssignments.FirstOrDefault(ass => ass.PropertyNameIdentifier.Name == "Name");
 			
-			const string missingParameterHere = "[DataContract(Name=\"<missing parameter here>\")]";
+			var namePropertyAssignment = a.PropertyAssignments.FirstOrDefault(ass => ass.PropertyNameIdentifier.Name == "Name");
+			var className = a.GetContainingTypeDeclaration().DeclaredName;
 
-			if (namePropertyAssignment == null)
-				errorMessage = missingParameterHere;
-			else
+			if (className.EndsWith("Config") || className.EndsWith("ConfigSection"))
 			{
-				var value = namePropertyAssignment.Source.ConstantValue.Value as string;
-				if (string.IsNullOrEmpty(value))
+				const string missingParameterHere = "[DataContract(Name=\"<missing parameter here>\")]";
+
+				if (namePropertyAssignment == null)
 					errorMessage = missingParameterHere;
 				else
 				{
-					var firstChar = value.Substring(0, 1);
-					if (firstChar.ToLowerInvariant() == firstChar)
-						warningMessage = "[DataContract(Name=\"<ExpectingUpperCaseHere>\")]";
+					var value = namePropertyAssignment.Source.ConstantValue.Value as string;
+					if (string.IsNullOrEmpty(value))
+						errorMessage = missingParameterHere;
+					else
+					{
+						var firstChar = value.Substring(0, 1);
+						if (firstChar.ToLowerInvariant() == firstChar)
+							warningMessage = "[DataContract(Name=\"<ExpectingUpperCaseHere>\")]";
+					}
 				}
+			}
+			else
+			{
+				if (namePropertyAssignment != null)
+					warningMessage = "Name is only required for NConfiguration config classes";
 			}
 
 			return true;

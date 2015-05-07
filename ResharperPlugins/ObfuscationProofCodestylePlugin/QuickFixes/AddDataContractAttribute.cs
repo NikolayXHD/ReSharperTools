@@ -5,7 +5,7 @@ namespace AbbyyLS.ReSharper
 	public class AddDataContractAttribute : AddAttributeBulbAction<IClassDeclaration>
 	{
 		public AddDataContractAttribute(IClassDeclaration propertyDeclaration)
-			:base(propertyDeclaration)
+			: base(propertyDeclaration)
 		{
 		}
 
@@ -16,7 +16,15 @@ namespace AbbyyLS.ReSharper
 
 		protected override string DescriptionPattern
 		{
-			get { return "Add attribute [DataContract(Name=\"{0}\")]"; }
+			get
+			{
+				var declaredName = PropertyDeclaration.DeclaredName;
+
+				if (!declaredName.EndsWith("Config") && !declaredName.EndsWith("ConfigSection"))
+					return "Add attribute [DataContract]";
+
+				return "Add attribute [DataContract(Name=\"{0}\")]";
+			}
 		}
 
 		protected override string FixedParamValue
@@ -26,21 +34,44 @@ namespace AbbyyLS.ReSharper
 
 		protected override string NamedParamName
 		{
-			get { return "Name"; }
+			get
+			{
+				var declaredName = PropertyDeclaration.DeclaredName;
+
+				if (!declaredName.EndsWith("Config") && !declaredName.EndsWith("ConfigSection"))
+					return null;
+
+				return "Name";
+			}
 		}
 
 		protected override string NamedParamValue
 		{
-			get 
+			get
 			{
+				var declaredName = PropertyDeclaration.DeclaredName;
+
+				if (!declaredName.EndsWith("Config") && !declaredName.EndsWith("ConfigSection"))
+					return null;
+
 				var propertyName = PropertyDeclaration.DeclaredName;
 
-				if (propertyName.EndsWith("Model"))
-					return propertyName.Substring(0, propertyName.Length - "Model".Length);
 				if (propertyName.EndsWith("Config"))
 					return propertyName.Substring(0, propertyName.Length - "Config".Length);
 
 				return propertyName;
+			}
+		}
+
+		protected override string PropertyAssignmentNameToErase
+		{
+			get
+			{
+				var declaredName = PropertyDeclaration.DeclaredName;
+				if (!declaredName.EndsWith("Config") && !declaredName.EndsWith("ConfigSection"))
+					return "Name";
+
+				return null;
 			}
 		}
 	}
