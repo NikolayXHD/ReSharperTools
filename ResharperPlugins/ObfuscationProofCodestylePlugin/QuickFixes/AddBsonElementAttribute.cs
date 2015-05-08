@@ -5,7 +5,7 @@ namespace AbbyyLS.ReSharper
 	public class AddBsonElementAttribute : AddAttributeBulbAction<IPropertyDeclaration>
 	{
 		public AddBsonElementAttribute(IPropertyDeclaration propertyDeclaration)
-			:base(propertyDeclaration)
+			: base(propertyDeclaration)
 		{
 		}
 
@@ -17,6 +17,15 @@ namespace AbbyyLS.ReSharper
 		protected override string DescriptionPattern
 		{
 			get { return "Add attribute [BsonElement(\"{0}\")]"; }
+		}
+
+		protected override string FixedParamValue
+		{
+			get
+			{
+				var propertyName = PropertyDeclaration.DeclaredName;
+				return IdentifierUtil.ToLowerCamelCase(propertyName);
+			}
 		}
 	}
 }
